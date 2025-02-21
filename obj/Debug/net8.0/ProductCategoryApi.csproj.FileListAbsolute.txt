@@ -1,0 +1,6 @@
+/Users/glitchy/api.net/ProductCategoryApi/ProductCategoryApi/obj/Debug/net8.0/ProductCategoryApi.GeneratedMSBuildEditorConfig.editorconfig
+/Users/glitchy/api.net/ProductCategoryApi/ProductCategoryApi/obj/Debug/net8.0/ProductCategoryApi.AssemblyInfoInputs.cache
+/Users/glitchy/api.net/ProductCategoryApi/ProductCategoryApi/obj/Debug/net8.0/ProductCategoryApi.AssemblyInfo.cs
+/Users/glitchy/api.net/ProductCategoryApi/ProductCategoryApi/obj/Debug/net8.0/ProductCategoryApi.csproj.CoreCompileInputs.cache
+/Users/glitchy/api.net/ProductCategoryApi/ProductCategoryApi/obj/Debug/net8.0/ProductCategoryApi.MvcApplicationPartsAssemblyInfo.cache
+/Users/glitchy/api.net/ProductCategoryApi/ProductCategoryApi/obj/Debug/net8.0/ProductCategoryApi.sourcelink.json
