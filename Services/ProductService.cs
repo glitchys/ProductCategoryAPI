@@ -1,8 +1,8 @@
-using ProductCategoryApi.Models;
 using ProductCategoryApi.DTOs;
 using ProductCategoryApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using ProductCategoryApi.Models;
 
 namespace ProductCategoryApi.Services
 {
