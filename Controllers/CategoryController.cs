@@ -17,7 +17,7 @@ namespace ProductCategoryApi.Controllers
             _categoryService = categoryService;
         }
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilter))] //mostafa
+        [ServiceFilter(typeof(ValidationFilter))] 
 
         public IActionResult CreateCategory(CategoryForm form)
         {
