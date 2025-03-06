@@ -3,6 +3,7 @@ using ProductCategoryApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using ProductCategoryApi.Models;
+using ProductCategoryApi.Forms;
 
 namespace ProductCategoryApi.Services
 {
@@ -15,9 +16,15 @@ namespace ProductCategoryApi.Services
             _crudService = new CrudService<Product, ProductDto>();
         }
 
-        public ProductDto CreateProduct(Product product)
+        public ProductDto CreateProduct(ProductForm product)
         {
-            return _crudService.Create(product, (item, id) => item.Id = id, MapToDto);
+            var Product = new Product
+            {
+                Name = product.Name,
+                Price = product.Price,
+            };
+
+            return _crudService.Create(Product, (item, id) => item.Id = id, MapToDto);
         }
 
         public List<ProductDto> GetAllProducts()
