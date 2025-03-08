@@ -3,36 +3,30 @@ using ProductCategoryApi.Forms;
 using ProductCategoryApi.Models;
 using ProductCategoryApi.Services;
 using ProductCategoryApi.Filters;
+using ProductCategoryApi.DTOs;
 
 namespace ProductCategoryApi.Controllers
 {
     [ApiController]
     [Route("api/category")]
     [ServiceFilter(typeof(LoggingFilter))]
-    public class CategoriesController : ControllerBase
+    public class CategoriesController(CategoryService categoryService) : ControllerBase
     {
-        private readonly CategoryService _categoryService;
-        public CategoriesController(CategoryService categoryService)
-        {
-            _categoryService = categoryService;
-        }
-        [HttpPost]
-        [ServiceFilter(typeof(ValidationFilter))] 
+        private readonly CategoryService _categoryService = categoryService;
+        private Category category;
 
-        public IActionResult CreateCategory(CategoryForm form)
+        [HttpPost]
+        [ServiceFilter(typeof(ValidationFilter))]
+
+        public IActionResult CreateCategory(Category CategoryDTO)
         {
-            var category = new Category
-            {
-                Name = form.Name,
-                Description = form.Description,
-            };
-            var CategoryDTO = _categoryService.CategoryDTO(category);
+            var createdCategory = _categoryService.CreateCategory(category);
             return CreatedAtAction(nameof(GetCategoryById), new { id = CategoryDTO.Id }, CategoryDTO);
         }
         [HttpGet]
-        public IActionResult GetAllCategories()
+        public IActionResult GetAllCategories([FromQuery] string name, [FromQuery] string description)
         {
-            var categories = _categoryService.GetAllCategories();
+            var categories = _categoryService.GetAllCategories(name, description);
             return Ok(categories);
         }
         [HttpGet("{id}")]
@@ -44,6 +38,16 @@ namespace ProductCategoryApi.Controllers
                 return NotFound();
             }
             return Ok(category);
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdateCategory(int id, [FromBody] CategoryForm form)
+        {
+            var updatedCategory = _categoryService.UpdateCategory(id, form);
+            if (updatedCategory == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedCategory);
         }
         [HttpDelete]
         public IActionResult DeleteCategoryById(int id)

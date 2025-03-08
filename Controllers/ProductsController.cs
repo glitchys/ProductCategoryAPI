@@ -21,43 +21,15 @@ namespace ProductCategoryApi.Controllers
         [HttpPost]
         public IActionResult CreateProduct(ProductForm form)
         {
-            //var createdProduct = _productService.CreateProduct(product);
-            var product = new Product
-            {
-                Name = form.Name,
-                Price = form.Price,
-            };
-            var createdProduct = _productService.CreateProduct(product);
+            var createdProduct = _productService.CreateProduct(form);
             return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
-
         }
         [HttpGet]
-        public IActionResult GetAllProducts()
+        public IActionResult GetAllProducts(FromQuery] string name, 
+        [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, 
+        [FromQuery] int? minQuantity, [FromQuery] int? maxQuantity)
         {
-            var products = _productService.GetAllProducts();
-            //here for the products name to be case insesitive match 
-            if (!string.IsNullOrEmpty(productName))
-            {
-                products = products.Where(p.Name.Contains(productName, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-            //min price filter
-            if (minPrice.HasValue)
-            {
-                products = products.Where(p => p.Price >= minPrice.Value).ToList();
-            }
-            //max price 
-            if (maxPrice.HasValue)
-            {
-                products = products.Where(p => p.Price <= maxPrice.Value).ToList();
-            }
-            if (minQuantity.HasValue)
-            {
-                products = products.Where(p => p.Quantity >= minQuantity.Value).ToList();
-            }
-            if (maxQuantity.HasValue)
-            {
-                products = products.Where(p => p.Quantity >= maxQuantity.Value).ToList();
-            }
+            var products = _productService.GetAllProducts(name, minPrice, maxPrice, minQuantity, maxQuantity);
             return Ok(products);
         }
         [HttpGet("{id}")]

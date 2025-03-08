@@ -10,5 +10,7 @@ namespace ProductCategoryApi.Forms
         [Required]
         [Range(0.1, double.MaxValue, ErrorMessage = "Price Must Be A Positive Number And More Than 0.1$")]
         public decimal Price { get; set; }
+        [Required]
+        public int Quantity { get; set; }
     }
 }

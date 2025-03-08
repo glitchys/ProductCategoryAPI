@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using ProductCategoryApi.Models;
 using ProductCategoryApi.Forms;
+using ProductCategoryApi.Filters;
 
 namespace ProductCategoryApi.Services
 {
@@ -16,42 +17,29 @@ namespace ProductCategoryApi.Services
             _crudService = new CrudService<Product, ProductDto>();
         }
 
-        public ProductDto CreateProduct(ProductForm product)
+        public ProductDto CreateProduct(ProductForm form)
         {
             var Product = new Product
             {
-                Name = product.Name,
-                Price = product.Price,
+                Name = form.Name,
+                Price = form.Price,
             };
 
-            return _crudService.Create(Product, (item, id) => item.Id = id, MapToDto);
+            var createdProduct = _crudService.Create(Product, (item, id) => item.Id = id, MapToDto);
+            return createdProduct;
         }
         //filter product by (name,price,quantity)
         public List<ProductDto> GetAllProducts(string? name = null, decimal? minPrice = null,
         decimal? maxPrice = null, int? minQuantity = null, int? maxQuantity = null)
         {
-            var products = _crudService.GetAll(MapToDto);
-            if (!string.IsNullOrEmpty(name))
+            var filters = new Predicate<Product>[]
             {
-                products = products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-            if (minPrice.HasValue)
-            {
-                products = products.Where(p => p.Price >= minPrice.Value).ToList();
-            }
-            if (maxPrice.HasValue)
-            {
-                products = products.Where(p => p.Price >= maxPrice.Value).ToList();
-            }
-            if (minQuantity.HasValue)
-            {
-                products = products.Where(p => p.Quantity >= minQuantity.Value).ToList();
-            }
-            if (maxQuantity.HasValue)
-            {
-                products = products.Where(p => p.Quantity >= maxQuantity.Value).ToList();
-            }
-            return products;
+                ProductFilters.FilterByName(name),
+                ProductFilters.FilterByPrice(minPrice,maxPrice),
+                ProductFilters.FilterByQuantity(minQuantity, maxQuantity)
+            };
+            var combinedFilter = ProductFilters.CombineFilters(filters);
+            return _crudService.GetAll(MapToDto, combinedFilter); 
         }
 
         public ProductDto GetProductById(int id)

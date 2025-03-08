@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using ProductCategoryApi.Models;
 using ProductCategoryApi.DTOs;
+using ProductCategoryApi.Forms;
+using ProductCategoryApi.Filters;
 namespace ProductCategoryApi.Services
 {
     public class CategoryService
@@ -19,19 +21,31 @@ namespace ProductCategoryApi.Services
                 Name = category.Name,
                 Description = category.Description
             };
-
             return _crudService.Create(newCategory, (item, id) => item.Id = id, MapToDto);
         }
-        public List<CategoryDTO> GetAllCategories()
+        public List<CategoryDTO> GetAllCategories(string name = null, string description = null)
         {
-            return _crudService.GetAll(MapToDto);
+            var filters = new Predicate<Category>[]
+            {
+                CategoryFilters.FilterByName(name),
+                CategoryFilters.FilterByDescription(description)
+            };
+            var combinedFilter = CategoryFilters.CombineFilters(filters);
+            return _crudService.GetAll(MapToDto, combinedFilter); 
         }
-        public CategoryDTO GetCategoryById(int id)
+        public CategoryDTO UpdateCategory(int id, CategoryForm form)
         {
-            return _crudService.GetById(id, item => item.Id, MapToDto);
-        }
-        public CategoryDTO UpdateCategory(int id, Category updatedCategory)
-        {
+            var existingCategory = GetCategoryById(id);
+            if (existingCategory != null)
+            {
+                return null;
+            }
+            var updatedCategory = new Category
+            {
+                Id = id,
+                Name = form.Name,
+                Description = form.Description,
+            };
             return _crudService.Update(id, updatedCategory, item => item.Id, MapToDto);
         }
         public bool DeleteCategory(int id)

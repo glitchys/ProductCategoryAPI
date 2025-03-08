@@ -17,9 +17,14 @@ namespace ProductCategoryApi.Services
             return mapToDto(item);
         }
         //get all entites
-        public List<TDto> GetAll(Func<T, TDto> mapToDto)
+        public List<TDto> GetAll(Func<T, TDto> mapToDto, Predicate<T> filter = null)
         {
-            return _items.Select(mapToDto).ToList();
+            var items = _items;
+            if (filter != null)
+            {
+                items = items.FindAll(filter);
+            }
+            return items.Select(mapToDto).ToList();
         }
         //get entity by id
         public TDto GetById(int id, Func<T, int> getId, Func<T, TDto> mapToDto)
