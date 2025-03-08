@@ -26,10 +26,32 @@ namespace ProductCategoryApi.Services
 
             return _crudService.Create(Product, (item, id) => item.Id = id, MapToDto);
         }
-
-        public List<ProductDto> GetAllProducts()
+        //filter product by (name,price,quantity)
+        public List<ProductDto> GetAllProducts(string? name = null, decimal? minPrice = null,
+        decimal? maxPrice = null, int? minQuantity = null, int? maxQuantity = null)
         {
-            return _crudService.GetAll(MapToDto);
+            var products = _crudService.GetAll(MapToDto);
+            if (!string.IsNullOrEmpty(name))
+            {
+                products = products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.Price >= minPrice.Value).ToList();
+            }
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price >= maxPrice.Value).ToList();
+            }
+            if (minQuantity.HasValue)
+            {
+                products = products.Where(p => p.Quantity >= minQuantity.Value).ToList();
+            }
+            if (maxQuantity.HasValue)
+            {
+                products = products.Where(p => p.Quantity >= maxQuantity.Value).ToList();
+            }
+            return products;
         }
 
         public ProductDto GetProductById(int id)

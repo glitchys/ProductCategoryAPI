@@ -1,7 +1,8 @@
-using ProductCategoryApi.Filters;  
+using ProductCategoryApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 using ProductCategoryApi.Models;
 using ProductCategoryApi.Services;
+using System.Reflection.PortableExecutable;
 namespace ProductCategoryApi.Forms
 
 namespace ProductCategoryApi.Controllers
@@ -34,6 +35,29 @@ namespace ProductCategoryApi.Controllers
         public IActionResult GetAllProducts()
         {
             var products = _productService.GetAllProducts();
+            //here for the products name to be case insesitive match 
+            if (!string.IsNullOrEmpty(productName))
+            {
+                products = products.Where(p.Name.Contains(productName, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            //min price filter
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.Price >= minPrice.Value).ToList();
+            }
+            //max price 
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value).ToList();
+            }
+            if (minQuantity.HasValue)
+            {
+                products = products.Where(p => p.Quantity >= minQuantity.Value).ToList();
+            }
+            if (maxQuantity.HasValue)
+            {
+                products = products.Where(p => p.Quantity >= maxQuantity.Value).ToList();
+            }
             return Ok(products);
         }
         [HttpGet("{id}")]
@@ -48,9 +72,9 @@ namespace ProductCategoryApi.Controllers
         }
         //update 
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, Product updatedProduct)
+        public IActionResult UpdateProduct(int id, ProductForm updatedProductForm)
         {
-            var product = _productService.UpdateProduct(id, updatedProduct);
+            var product = _productService.UpdateProduct(id, updatedProductForm);
             if (product == null)
             {
                 return NotFound();

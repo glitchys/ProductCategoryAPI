@@ -2,20 +2,25 @@ using ProductCategoryApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using ProductCategoryApi.Models;
-
-namespace ProductCategoryApi.DTOs;
+using ProductCategoryApi.DTOs;
 namespace ProductCategoryApi.Services
 {
     public class CategoryService
     {
         private readonly CrudService<Category, CategoryDTO> _crudService;
-        public CategoryService()
+        public CategoryService(CrudService<Category, CategoryDTO> crudService)
         {
-            _crudService = new CrudService<Category, CategoryDTO>();
+            _crudService = crudService;
         }
         public Category CreateCategory(Category category)
         {
-            return _crudService.Create(category, (item, id) => item.Id = id, MapToDto);
+            var newCategory = new Category // Renamed to `newCategory` to avoid conflict
+            {
+                Name = category.Name,
+                Description = category.Description
+            };
+
+            return _crudService.Create(newCategory, (item, id) => item.Id = id, MapToDto);
         }
         public List<CategoryDTO> GetAllCategories()
         {
@@ -41,11 +46,6 @@ namespace ProductCategoryApi.Services
                 Name = category.Name,
                 Description = category.Description
             };
-        }
-
-        internal object CategoryDTO(Category category)
-        {
-            throw new NotImplementedException();
         }
     }
 }
