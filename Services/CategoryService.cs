@@ -23,20 +23,20 @@ namespace ProductCategoryApi.Services
             };
             return _crudService.Create(newCategory, (item, id) => item.Id = id, MapToDto);
         }
-        public List<CategoryDTO> GetAllCategories(string name = null, string description = null)
+        public List<CategoryDTO> GetAllCategories(CategoryFilterForm filter)
         {
             var filters = new Predicate<Category>[]
             {
-                CategoryFilters.FilterByName(name),
-                CategoryFilters.FilterByDescription(description)
+                CategoryFilters.FilterByName(filter.name),
+                CategoryFilters.FilterByDescription(filter.description)
             };
             var combinedFilter = CategoryFilters.CombineFilters(filters);
-            return _crudService.GetAll(MapToDto, combinedFilter); 
+            return _crudService.GetAll(MapToDto, combinedFilter);
         }
-        public CategoryDTO UpdateCategory(int id, CategoryForm form)
+        public CategoryDTO? UpdateCategory(int id, CategoryForm form)
         {
-            var existingCategory = GetCategoryById(id);
-            if (existingCategory != null)
+            var existingCategory = _crudService.GetById(id, c => c.Id);
+            if (existingCategory == null)
             {
                 return null;
             }
@@ -60,6 +60,11 @@ namespace ProductCategoryApi.Services
                 Name = category.Name,
                 Description = category.Description
             };
+        }
+
+        internal object CreateCategory(object category)
+        {
+            throw new NotImplementedException();
         }
     }
 }

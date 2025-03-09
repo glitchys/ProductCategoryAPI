@@ -13,20 +13,28 @@ namespace ProductCategoryApi.Controllers
     public class CategoriesController(CategoryService categoryService) : ControllerBase
     {
         private readonly CategoryService _categoryService = categoryService;
-        private Category category;
-
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilter))]
-
-        public IActionResult CreateCategory(Category CategoryDTO)
+        public IActionResult CreateCategory([FromBody] CategoryForm form)
         {
-            var createdCategory = _categoryService.CreateCategory(category);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = CategoryDTO.Id }, CategoryDTO);
+            if (form == null)
+            {
+                return BadRequest("Invalid Date.");
+            }
+            var createdCategory = _categoryService.CreateCategory(form);
+            var categoryDTO = new CategoryDTO
+            {
+                Id = createdCategory.id,
+                Name = createdCategory.Name,
+                Description = createdCategory.Description
+            };
+
+            return CreatedAtAction(nameof(GetCategoryById), new { id = categoryDTO.Id }, categoryDTO);
         }
         [HttpGet]
-        public IActionResult GetAllCategories([FromQuery] string name, [FromQuery] string description)
+        public IActionResult GetAllCategories([FromQuery] CategoryFilterForm filter)
         {
-            var categories = _categoryService.GetAllCategories(name, description);
+            var categories = _categoryService.GetAllCategories(filter);
             return Ok(categories);
         }
         [HttpGet("{id}")]
@@ -42,6 +50,10 @@ namespace ProductCategoryApi.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateCategory(int id, [FromBody] CategoryForm form)
         {
+            if (form == null)
+            {
+                return BadRequest("Invalid Date.");
+            }
             var updatedCategory = _categoryService.UpdateCategory(id, form);
             if (updatedCategory == null)
             {

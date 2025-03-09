@@ -29,14 +29,13 @@ namespace ProductCategoryApi.Services
             return createdProduct;
         }
         //filter product by (name,price,quantity)
-        public List<ProductDto> GetAllProducts(string? name = null, decimal? minPrice = null,
-        decimal? maxPrice = null, int? minQuantity = null, int? maxQuantity = null)
+        public List<ProductDto> GetAllProducts(ProductFilterForm filter)
         {
             var filters = new Predicate<Product>[]
             {
-                ProductFilters.FilterByName(name),
-                ProductFilters.FilterByPrice(minPrice,maxPrice),
-                ProductFilters.FilterByQuantity(minQuantity, maxQuantity)
+                ProductFilters.FilterByName(filter.name),
+                ProductFilters.FilterByPrice(filter.minPrice,filter.maxPrice),
+                ProductFilters.FilterByQuantity(filter.minQuantity, filter.maxQuantity)
             };
             var combinedFilter = ProductFilters.CombineFilters(filters);
             return _crudService.GetAll(MapToDto, combinedFilter); 

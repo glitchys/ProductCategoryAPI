@@ -25,9 +25,7 @@ namespace ProductCategoryApi.Controllers
             return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
         }
         [HttpGet]
-        public IActionResult GetAllProducts(FromQuery] string name, 
-        [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, 
-        [FromQuery] int? minQuantity, [FromQuery] int? maxQuantity)
+        public IActionResult GetAllProducts([FromQuery] ProductFilterForm filter)
         {
             var products = _productService.GetAllProducts(name, minPrice, maxPrice, minQuantity, maxQuantity);
             return Ok(products);
@@ -44,7 +42,7 @@ namespace ProductCategoryApi.Controllers
         }
         //update 
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, ProductForm updatedProductForm)
+        public IActionResult UpdateProduct(int id, [FromBody] CategoryForm form)
         {
             var product = _productService.UpdateProduct(id, updatedProductForm);
             if (product == null)
